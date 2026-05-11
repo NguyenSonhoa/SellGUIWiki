@@ -1,4 +1,4 @@
-const VERSION = "3.0.1";
+const VERSION = "3.0.2";
 
 function escapeHtml(value) {
   return String(value)
@@ -50,7 +50,7 @@ function pills(items, style = "") {
 const snippets = {
   install: `
 # Install
-1. Put SellGUI-3.0.1.jar in plugins/
+1. Put SellGUI-3.0.2.jar in plugins/
 2. Install Vault, NBTAPI, and an economy provider
 3. Restart the server
 4. Edit plugins/SellGUI/
@@ -138,6 +138,9 @@ fishing-info:
   name: "&bFishing Sell Info"
   glimmer: false
   custom-model-data: 0
+  item-model: "kostka:add10_button_model"
+  hide-tool-tip: true
+  tooltip-style: "minecraft:empty"
   slot: 35
   menus:
     - "fishing"
@@ -261,7 +264,7 @@ const sections = [
           <h3>Install checklist</h3>
           <ol>
             <li>Install <code>Vault</code>, <code>NBTAPI</code>, and an economy provider such as EssentialsX or CMI.</li>
-            <li>Put <code>SellGUI-3.0.1.jar</code> into the server <code>plugins/</code> folder.</li>
+            <li>Put <code>SellGUI-3.0.2.jar</code> into the server <code>plugins/</code> folder.</li>
             <li>Restart the server to generate default files.</li>
             <li>Edit <code>plugins/SellGUI/config.yml</code> and files under <code>plugins/SellGUI/gui/</code>.</li>
             <li>Run <code>/sellgui reload</code>.</li>
@@ -273,7 +276,7 @@ const sections = [
           <p>The repository includes the ShopGUI+ API jar used by Maven, so a fresh clone can build immediately.</p>
           ${codeBlock("terminal", snippets.build, "bash")}
           <p>Output jar:</p>
-          ${codeBlock("target", "target/SellGUI-3.0.1.jar")}
+          ${codeBlock("target", "target/SellGUI-3.0.2.jar")}
         </div>
       </div>
     `
@@ -568,7 +571,7 @@ const sections = [
     title: "Custom Menu Items",
     icon: "mouse-pointer-click",
     desc: "Add decorative/action buttons to sell menus.",
-    keywords: "custommenuitems custom menu items commands menus slot button",
+    keywords: "custommenuitems custom menu items commands menus slot button item-model tooltip tooltip-style hide-tool-tip",
     html: `
       <div class="doc-card">
         <h3>What this file is for</h3>
@@ -577,6 +580,9 @@ const sections = [
         ${table(["Key", "Purpose"], [
           ["<code>slot</code>", "Inventory slot where the item appears."],
           ["<code>menus</code>", "Optional list of sell menu IDs where the button appears. Empty or omitted means every sell menu."],
+          ["<code>item-model</code>", "Optional namespaced item model, for example <code>kostka:add10_button_model</code>."],
+          ["<code>hide-tool-tip</code>", "Optional boolean to hide the vanilla tooltip on supported servers."],
+          ["<code>tooltip-style</code>", "Optional namespaced tooltip style, for example <code>minecraft:empty</code>."],
           ["<code>disabled</code>", "If true, the button is replaced by the menu filler item."],
           ["<code>commands</code>", "Console commands run when clicked. Supports <code>%player%</code>."]
         ])}
@@ -787,11 +793,19 @@ const sections = [
     title: "Changelog",
     icon: "history",
     desc: "Recent release notes.",
-    keywords: "changelog versions release 3.0.1 3.0.0",
+    keywords: "changelog versions release 3.0.2 3.0.1 3.0.0",
     html: `
       <div class="doc-card">
         <h3>Release history</h3>
         <div class="timeline">
+          <div class="release">
+            <div class="release-header"><span class="release-title">3.0.2</span><span class="release-date">2026-05-11</span></div>
+            <ul>
+              <li>Added <code>item-model</code>, <code>hide-tool-tip</code>, and <code>tooltip-style</code> support for <code>custommenuitems.yml</code>.</li>
+              <li>Added example comments for modern item component fields.</li>
+              <li>Updated plugin, Maven, and documentation version to <code>3.0.2</code>.</li>
+            </ul>
+          </div>
           <div class="release">
             <div class="release-header"><span class="release-title">3.0.1</span><span class="release-date">2026-05-10</span></div>
             <ul>
