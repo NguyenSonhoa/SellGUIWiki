@@ -1,4 +1,4 @@
-const VERSION = "3.0.4";
+const VERSION = "3.0.5";
 
 function escapeHtml(value) {
   return String(value)
@@ -50,7 +50,7 @@ function pills(items, style = "") {
 const snippets = {
   install: `
 # Install
-1. Put SellGUI-3.0.4.jar in plugins/
+1. Put SellGUI-3.0.5.jar in plugins/
 2. Install Vault, NBTAPI, and an economy provider
 3. Restart the server
 4. Edit plugins/SellGUI/
@@ -248,7 +248,7 @@ const sections = [
           <h3>Important design rule</h3>
           <p>Prices are item-based. Sell menus decide where an item may be sold. A fish can have one global price, while <code>fishing.yml</code> decides whether it is accepted only in the fishing menu.</p>
           ${callout("warn", "<strong>Menu-specific price overrides are not part of the current pricing model.</strong> Use separate item identifiers or future custom logic if a server needs different prices per menu.")}
-          ${callout("", "<strong>Nexo note:</strong> Use <code>3.0.4</code> or newer if your server relies on Nexo custom attributes or tooltip styling. Versions <code>3.0.3</code> and <code>3.0.4</code> specifically harden the worth-lore and stack-normalizer paths for Nexo items.")}
+          ${callout("", "<strong>Nexo note:</strong> Use <code>3.0.5</code> or newer if your server relies on Nexo custom attributes or tooltip styling. Versions <code>3.0.3</code>, <code>3.0.4</code>, and <code>3.0.5</code> progressively harden the worth-lore, stack-normalizer, and synthetic slot-refresh paths for Nexo items.")}
         </div>
       </div>
     `
@@ -265,7 +265,7 @@ const sections = [
           <h3>Install checklist</h3>
           <ol>
             <li>Install <code>Vault</code>, <code>NBTAPI</code>, and an economy provider such as EssentialsX or CMI.</li>
-            <li>Put <code>SellGUI-3.0.4.jar</code> into the server <code>plugins/</code> folder.</li>
+            <li>Put <code>SellGUI-3.0.5.jar</code> into the server <code>plugins/</code> folder.</li>
             <li>Restart the server to generate default files.</li>
             <li>Edit <code>plugins/SellGUI/config.yml</code> and files under <code>plugins/SellGUI/gui/</code>.</li>
             <li>Run <code>/sellgui reload</code>.</li>
@@ -277,7 +277,7 @@ const sections = [
           <p>The repository includes the ShopGUI+ API jar used by Maven, so a fresh clone can build immediately.</p>
           ${codeBlock("terminal", snippets.build, "bash")}
           <p>Output jar:</p>
-          ${codeBlock("target", "target/SellGUI-3.0.4.jar")}
+          ${codeBlock("target", "target/SellGUI-3.0.5.jar")}
         </div>
       </div>
     `
@@ -634,6 +634,7 @@ const sections = [
           <h3>Enable worth lore</h3>
           <p>PacketEvents is required. Worth lore is displayed through packets so the real item is not constantly rewritten.</p>
           ${callout("", "<strong>3.0.3:</strong> worth lore now updates only the packet lore component instead of rebuilding Bukkit item meta, which helps preserve Nexo custom attribute displays.")}
+          ${callout("", "<strong>3.0.5:</strong> packet worth lore now respects <code>prices.calculation-method</code>, avoids extra Essentials or ShopGUI+ fallback drift in config-only setups, and forces the added lore line to render non-italic.")}
           ${codeBlock("config.yml", snippets.worthLore, "yaml")}
         </div>
         <div class="doc-card half">
@@ -796,11 +797,20 @@ const sections = [
     title: "Changelog",
     icon: "history",
     desc: "Recent release notes.",
-    keywords: "changelog versions release 3.0.4 3.0.3 3.0.2 3.0.1 3.0.0",
+    keywords: "changelog versions release 3.0.5 3.0.4 3.0.3 3.0.2 3.0.1 3.0.0",
     html: `
       <div class="doc-card">
         <h3>Release history</h3>
         <div class="timeline">
+          <div class="release">
+            <div class="release-header"><span class="release-title">3.0.5</span><span class="release-date">2026-05-14</span></div>
+            <ul>
+              <li>Updated plugin, Maven, and documentation version to <code>3.0.5</code>.</li>
+              <li>Worth lore now respects <code>prices.calculation-method</code> instead of drifting into extra Essentials or ShopGUI+ fallback paths.</li>
+              <li>Worth lore packet lines now render non-italic.</li>
+              <li>Skips synthetic Nexo slot refresh after inventory clicks to better preserve newer Nexo component-based tooltip display.</li>
+            </ul>
+          </div>
           <div class="release">
             <div class="release-header"><span class="release-title">3.0.4</span><span class="release-date">2026-05-13</span></div>
             <ul>
