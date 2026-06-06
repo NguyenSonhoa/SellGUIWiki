@@ -1,4 +1,4 @@
-const VERSION = "3.0.5";
+const VERSION = "3.1";
 
 function escapeHtml(value) {
   return String(value)
@@ -50,7 +50,7 @@ function pills(items, style = "") {
 const snippets = {
   install: `
 # Install
-1. Put SellGUI-3.0.5.jar in plugins/
+1. Put SellGUI-3.1.jar in plugins/
 2. Install Vault, NBTAPI, and an economy provider
 3. Restart the server
 4. Edit plugins/SellGUI/
@@ -59,7 +59,7 @@ const snippets = {
   build: `
 git clone https://github.com/NguyenSonhoa/SellGUI.git
 cd SellGUI
-git checkout v3.0
+git checkout v3.1
 mvn -q -DskipTests package
 `,
   layout: `
@@ -74,6 +74,8 @@ plugins/SellGUI/
   messages.yml
   sounds.yml
   autosell_data.yml
+  addons/
+    SellGUI-DynaShop-3.1.jar
   gui/
     sell_menus/
       default.yml
@@ -153,7 +155,7 @@ fishing-info:
   priceConfig: `
 prices:
   nbt-pricing: true
-  calculation-method: "auto"
+  calculation-method: "auto" # auto, addon, config, essentials, nbt, shopguiplus
   default-price: 0.0
   multipliers:
     enabled: true
@@ -203,6 +205,25 @@ stacking:
   normalize-smelt-results: true
   normalize-after-furnace-extract: true
 `,
+  addonConfig: `
+addons:
+  enabled: true
+  folder: "addons"
+
+prices:
+  calculation-method: "auto" # auto, addon, config, essentials, nbt, shopguiplus
+`,
+  dynashopInstall: `
+plugins/
+  SellGUI-3.1.jar
+  ShopGUIPlus.jar
+  ShopGUIPlus-DynaShop.jar
+  Vault.jar
+  NBTAPI.jar
+  SellGUI/
+    addons/
+      SellGUI-DynaShop-3.1.jar
+`,
   api: `
 SellGUIMain plugin = JavaPlugin.getPlugin(SellGUIMain.class);
 double price = plugin.getPriceManager().getItemPriceWithPlayer(itemStack, player);
@@ -211,6 +232,27 @@ plugin.getGUIManager().openPriceEvaluationGUI(player);
 SellGUIAPI api = new SellGUIAPI(plugin);
 double publicPrice = api.getPrice(itemStack, player);
 api.openSellGUI(player);
+`,
+  priceProvider: `
+public final class MyPriceProvider implements SellGUIPriceProvider {
+    @Override
+    public String getName() {
+        return "MyProvider";
+    }
+
+    @Override
+    public int getPriority() {
+        return 50;
+    }
+
+    @Override
+    public double getSellPrice(Player player, ItemStack itemStack) {
+        return lookupDynamicSellPrice(player, itemStack);
+    }
+}
+
+SellGUIMain sellGUI = SellGUIMain.getInstance();
+sellGUI.getSellGUIAPI().registerPriceProvider(new MyPriceProvider());
 `
 };
 
@@ -231,14 +273,14 @@ const sections = [
             <div class="stat"><strong>Vault</strong><span>Economy bridge</span></div>
           </div>
           <h3 class="mt-6">What SellGUI does</h3>
-          <p>SellGUI gives players a GUI-driven way to sell items and gives admins tight control over which items belong in each menu. Version 3 focuses on separate sell menu files, exclusive item categories, safer item stacking behavior, and a clearer pricing pipeline.</p>
-          ${pills(["/sellgui", "/sellall", "/autosell", "/sellguiprice", "MMOItems", "Nexo", "ShopGUI+", "Essentials"], "good")}
+          <p>SellGUI gives players a GUI-driven way to sell items and gives admins tight control over which items belong in each menu. Version 3.1 adds addon price providers, an <code>addons/</code> loader, and DynaShop support on top of the v3 menu and pricing pipeline.</p>
+          ${pills(["/sellgui", "/sellall", "/autosell", "/sellguiprice", "Addons", "DynaShop", "ShopGUI+", "Essentials"], "good")}
         </div>
         <div class="doc-card half">
           <h3>Core workflow</h3>
           <ol>
             <li>Install SellGUI with Vault, NBTAPI, and an economy plugin.</li>
-            <li>Configure prices in itemprices, mmoitems, nexo, Essentials, ShopGUI+, or item NBT.</li>
+            <li>Configure prices in itemprices, mmoitems, nexo, Essentials, ShopGUI+, addon providers, or item NBT.</li>
             <li>Create sell menus under <code>gui/sell_menus/</code>.</li>
             <li>Use <code>allowed-items</code>, <code>denied-items</code>, and <code>exclusive</code> to control item routing.</li>
             <li>Let players sell through the GUI, <code>/sellall</code>, or autosell.</li>
@@ -248,7 +290,7 @@ const sections = [
           <h3>Important design rule</h3>
           <p>Prices are item-based. Sell menus decide where an item may be sold. A fish can have one global price, while <code>fishing.yml</code> decides whether it is accepted only in the fishing menu.</p>
           ${callout("warn", "<strong>Menu-specific price overrides are not part of the current pricing model.</strong> Use separate item identifiers or future custom logic if a server needs different prices per menu.")}
-          ${callout("", "<strong>Nexo note:</strong> Use <code>3.0.5</code> or newer if your server relies on Nexo custom attributes or tooltip styling. Versions <code>3.0.3</code>, <code>3.0.4</code>, and <code>3.0.5</code> progressively harden the worth-lore, stack-normalizer, and synthetic slot-refresh paths for Nexo items.")}
+          ${callout("", "<strong>3.1 note:</strong> SellGUI can now load addon jars from <code>plugins/SellGUI/addons/</code>. The bundled <code>SellGUI-DynaShop</code> addon connects ShopGUIPlus-DynaShop dynamic prices to <code>/sellgui</code> and <code>/sellall</code>.")}
         </div>
       </div>
     `
@@ -265,7 +307,7 @@ const sections = [
           <h3>Install checklist</h3>
           <ol>
             <li>Install <code>Vault</code>, <code>NBTAPI</code>, and an economy provider such as EssentialsX or CMI.</li>
-            <li>Put <code>SellGUI-3.0.5.jar</code> into the server <code>plugins/</code> folder.</li>
+            <li>Put <code>SellGUI-3.1.jar</code> into the server <code>plugins/</code> folder.</li>
             <li>Restart the server to generate default files.</li>
             <li>Edit <code>plugins/SellGUI/config.yml</code> and files under <code>plugins/SellGUI/gui/</code>.</li>
             <li>Run <code>/sellgui reload</code>.</li>
@@ -277,7 +319,7 @@ const sections = [
           <p>The repository includes the ShopGUI+ API jar used by Maven, so a fresh clone can build immediately.</p>
           ${codeBlock("terminal", snippets.build, "bash")}
           <p>Output jar:</p>
-          ${codeBlock("target", "target/SellGUI-3.0.5.jar")}
+          ${codeBlock("target", "target/SellGUI-3.1.jar")}
         </div>
       </div>
     `
@@ -305,6 +347,7 @@ const sections = [
           ${table(["Plugin", "Purpose"], [
             ["EssentialsX", "Read Essentials worth prices."],
             ["ShopGUIPlus", "Read ShopGUI+ sell prices."],
+            ["ShopGUIPlus-DynaShop", "Optional dependency for the SellGUI-DynaShop addon and dynamic market prices."],
             ["MMOItems", "Detect and price MMOItems using <code>MMOITEMS:TYPE.ID</code> identifiers."],
             ["Nexo", "Detect and price Nexo items using <code>NEXO:ITEM_ID</code> identifiers."],
             ["MythicLib", "Extra metadata/NBT support for item handling."],
@@ -457,13 +500,14 @@ const sections = [
       <div class="content-grid">
         <div class="doc-card">
           <h3>Pricing sources</h3>
-          <p>SellGUI can price vanilla items, custom item stacks, MMOItems, Nexo items, NBT/PDC-priced items, Essentials worth, ShopGUI+ prices, and random/evaluated prices.</p>
+          <p>SellGUI can price vanilla items, custom item stacks, MMOItems, Nexo items, NBT/PDC-priced items, Essentials worth, ShopGUI+ prices, addon provider prices, and random/evaluated prices.</p>
           ${codeBlock("prices section", snippets.priceConfig, "yaml")}
         </div>
         <div class="doc-card half">
           <h3>Calculation method</h3>
           ${table(["Value", "Meaning"], [
-            ["<code>auto</code>", "Use the best available price source."],
+            ["<code>auto</code>", "Use the best available price source. Addon providers are checked before built-in fallbacks."],
+            ["<code>addon</code>", "Use registered addon price providers only. Aliases: <code>addons</code>, <code>external</code>."],
             ["<code>config</code>", "Use SellGUI config prices only."],
             ["<code>essentials</code>", "Use Essentials worth only."],
             ["<code>nbt</code>", "Use NBT price only."],
@@ -595,7 +639,7 @@ const sections = [
     title: "Integrations",
     icon: "plug",
     desc: "How external plugins fit into SellGUI.",
-    keywords: "integrations essentials shopguiplus mmoitems nexo mythiclib placeholderapi packetevents vault nbtapi",
+    keywords: "integrations essentials shopguiplus dynashop mmoitems nexo mythiclib placeholderapi packetevents vault nbtapi",
     html: `
       <div class="content-grid">
         <div class="doc-card half">
@@ -604,6 +648,7 @@ const sections = [
             <li><code>Vault</code> deposits player earnings.</li>
             <li><code>EssentialsX</code> can provide worth prices.</li>
             <li><code>ShopGUIPlus</code> can provide sell prices.</li>
+            <li><code>ShopGUIPlus-DynaShop</code> can provide dynamic market sell prices through the SellGUI-DynaShop addon.</li>
           </ul>
         </div>
         <div class="doc-card half">
@@ -618,6 +663,47 @@ const sections = [
           <h3>Nexo quick reference</h3>
           <p>Nexo prices are stored under <code>nexo:</code> in <code>nexo.yml</code>. Nexo item IDs should match the Nexo item ID.</p>
           ${codeBlock("nexo.yml", snippets.nexo, "yaml")}
+        </div>
+      </div>
+    `
+  },
+  {
+    id: "addons",
+    title: "Addons",
+    icon: "puzzle",
+    desc: "Load SellGUI addon jars and use external price providers.",
+    keywords: "addons addon dynashop sellgui-dynashop external price provider shopguiplus dynamic prices market",
+    html: `
+      <div class="content-grid">
+        <div class="doc-card">
+          <h3>Addon folder</h3>
+          <p>Since <code>3.1</code>, SellGUI can load addon plugin jars from its own data folder. Put addon jars in <code>plugins/SellGUI/addons/</code> and restart the server.</p>
+          ${codeBlock("folder layout", snippets.dynashopInstall)}
+          ${callout("", "If an addon is already loaded directly from <code>plugins/</code>, SellGUI skips the duplicate jar in <code>addons/</code>.")}
+        </div>
+        <div class="doc-card half">
+          <h3>Addon config</h3>
+          ${codeBlock("config.yml", snippets.addonConfig, "yaml")}
+          <p>Use <code>auto</code> for normal fallback behavior. Use <code>addon</code> when the server should sell only through registered addon providers.</p>
+        </div>
+        <div class="doc-card half">
+          <h3>SellGUI-DynaShop</h3>
+          <ul>
+            <li>Requires <code>SellGUI</code>, <code>ShopGUIPlus</code>, and <code>ShopGUIPlus-DynaShop</code>.</li>
+            <li>Reads ShopGUIPlus-DynaShop dynamic sell prices for <code>/sellgui</code> and <code>/sellall</code>.</li>
+            <li>Supports progressive pricing by using DynaShop's average price for the stack amount.</li>
+            <li>Notifies DynaShop after a sale so market price and stock can update.</li>
+          </ul>
+        </div>
+        <div class="doc-card">
+          <h3>Install DynaShop addon</h3>
+          <ol>
+            <li>Install <code>SellGUI-3.1.jar</code> in <code>plugins/</code>.</li>
+            <li>Install <code>ShopGUIPlus</code> and <code>ShopGUIPlus-DynaShop</code> in <code>plugins/</code>.</li>
+            <li>Put <code>SellGUI-DynaShop-3.1.jar</code> in <code>plugins/SellGUI/addons/</code>.</li>
+            <li>Restart the server.</li>
+            <li>Keep <code>prices.calculation-method: "auto"</code> or set it to <code>"addon"</code> for addon-only pricing.</li>
+          </ol>
         </div>
       </div>
     `
@@ -712,7 +798,7 @@ const sections = [
     title: "Developer API",
     icon: "code-2",
     desc: "Useful classes and common extension points.",
-    keywords: "developer api SellGUIMain PriceManager GUIManager ItemIdentifier",
+    keywords: "developer api SellGUIMain PriceManager GUIManager ItemIdentifier SellGUIPriceProvider addon provider",
     html: `
       <div class="content-grid">
         <div class="doc-card half">
@@ -723,11 +809,18 @@ const sections = [
             <li><code>getPriceManager()</code>: price lookup and price saving.</li>
             <li><code>getGUIManager()</code>: open price/evaluation/autosell GUIs.</li>
             <li><code>ItemIdentifier</code>: identify vanilla, MMOItems, and Nexo items.</li>
+            <li><code>SellGUIPriceProvider</code>: register external price providers for addon plugins.</li>
           </ul>
         </div>
         <div class="doc-card half">
           <h3>Example</h3>
           ${codeBlock("Java", snippets.api, "java")}
+        </div>
+        <div class="doc-card">
+          <h3>Price provider addon</h3>
+          <p>Addon plugins can register a provider with <code>SellGUIAPI</code>. SellGUI checks providers by priority and uses the first positive price returned.</p>
+          ${codeBlock("Java", snippets.priceProvider, "java")}
+          ${callout("", "Use <code>onItemsSold</code> in a provider when the external economy or market must update after SellGUI completes a sale.")}
         </div>
       </div>
     `
@@ -789,6 +882,15 @@ const sections = [
           <p>Make sure this file exists:</p>
           ${codeBlock("required local jar", "libs/shopgui-api-3.1.0.jar\nmvn -q -DskipTests package")}
         </div>
+        <div class="doc-card half">
+          <h3>Addon jar does not load</h3>
+          <ul>
+            <li>Check that the jar is inside <code>plugins/SellGUI/addons/</code>.</li>
+            <li>Check <code>addons.enabled: true</code> in <code>config.yml</code>.</li>
+            <li>Install any dependencies declared by the addon. For <code>SellGUI-DynaShop</code>, install <code>ShopGUIPlus</code> and <code>ShopGUIPlus-DynaShop</code>.</li>
+            <li>Restart the server after adding or replacing addon jars.</li>
+          </ul>
+        </div>
       </div>
     `
   },
@@ -797,11 +899,21 @@ const sections = [
     title: "Changelog",
     icon: "history",
     desc: "Recent release notes.",
-    keywords: "changelog versions release 3.0.5 3.0.4 3.0.3 3.0.2 3.0.1 3.0.0",
+    keywords: "changelog versions release 3.1 3.0.5 3.0.4 3.0.3 3.0.2 3.0.1 3.0.0",
     html: `
       <div class="doc-card">
         <h3>Release history</h3>
         <div class="timeline">
+          <div class="release">
+            <div class="release-header"><span class="release-title">3.1</span><span class="release-date">2026-06-06</span></div>
+            <ul>
+              <li>Updated plugin, Maven, addon, and documentation version to <code>3.1</code>.</li>
+              <li>Added external price provider API for addon plugins.</li>
+              <li>Added <code>plugins/SellGUI/addons/</code> addon loading.</li>
+              <li>Added <code>SellGUI-DynaShop</code> addon support for ShopGUIPlus-DynaShop dynamic market prices.</li>
+              <li>Fixed sound lookup compatibility on Youer/Paper-NeoForge hybrid servers.</li>
+            </ul>
+          </div>
           <div class="release">
             <div class="release-header"><span class="release-title">3.0.5</span><span class="release-date">2026-05-14</span></div>
             <ul>
