@@ -147,6 +147,7 @@ fishing-info:
   menus:
     - "fishing"
   disabled: false
+  sender: "player" # console, player, or op
   lore:
     - "&7This button only appears"
     - "&7in the fishing sell menu."
@@ -623,13 +624,14 @@ const sections = [
         <p><code>custommenuitems.yml</code> is an overlay for buttons or decorative items. It is not a price file and it is not a sell menu layout file.</p>
         ${codeBlock("custommenuitems.yml", snippets.customMenuItem, "yaml")}
         ${table(["Key", "Purpose"], [
-          ["<code>slot</code>", "Inventory slot where the item appears."],
+          ["<code>slot</code>", "Zero-based inventory slot where the item appears. A 54-slot menu uses <code>0</code> through <code>53</code>."],
           ["<code>menus</code>", "Optional list of sell menu IDs where the button appears. Empty or omitted means every sell menu."],
           ["<code>item-model</code>", "Optional namespaced item model, for example <code>kostka:add10_button_model</code>."],
           ["<code>hide-tool-tip</code>", "Optional boolean to hide the vanilla tooltip on supported servers."],
           ["<code>tooltip-style</code>", "Optional namespaced tooltip style, for example <code>minecraft:empty</code>."],
           ["<code>disabled</code>", "If true, the button is replaced by the menu filler item."],
-          ["<code>commands</code>", "Console commands run when clicked. Supports <code>%player%</code>."]
+          ["<code>sender</code>", "Command sender: <code>console</code> (default), <code>player</code>, or <code>op</code>. The <code>op</code> mode temporarily grants OP only while dispatching the command."],
+          ["<code>commands</code>", "Commands run when clicked. Supports <code>%player%</code>; a leading <code>/</code> is optional."]
         ])}
       </div>
     `
@@ -649,6 +651,7 @@ const sections = [
             <li><code>EssentialsX</code> can provide worth prices.</li>
             <li><code>ShopGUIPlus</code> can provide sell prices.</li>
             <li><code>ShopGUIPlus-DynaShop</code> can provide dynamic market sell prices through the SellGUI-DynaShop addon.</li>
+            <li><code>DynamicShop</code> can provide dynamic sell prices through the SellGUI-DynamicShop addon.</li>
           </ul>
         </div>
         <div class="doc-card half">
@@ -672,7 +675,7 @@ const sections = [
     title: "Addons",
     icon: "puzzle",
     desc: "Load SellGUI addon jars and use external price providers.",
-    keywords: "addons addon dynashop sellgui-dynashop external price provider shopguiplus dynamic prices market",
+     keywords: "addons addon dynashop dynamicshop sellgui-dynashop sellgui-dynamicshop external price provider shopguiplus dynamic prices market",
     html: `
       <div class="content-grid">
         <div class="doc-card">
@@ -704,6 +707,16 @@ const sections = [
             <li>Restart the server.</li>
             <li>Keep <code>prices.calculation-method: "auto"</code> or set it to <code>"addon"</code> for addon-only pricing.</li>
           </ol>
+        </div>
+        <div class="doc-card">
+          <h3>Install DynamicShop addon</h3>
+          <ol>
+            <li>Install <code>SellGUI-3.1.7.jar</code> and <code>DynamicShop</code> in <code>plugins/</code>.</li>
+            <li>Put <code>SellGUI-DynamicShop-3.1.7.jar</code> in <code>plugins/SellGUI/addons/</code>.</li>
+            <li>Restart the server.</li>
+            <li>Use <code>prices.calculation-method: "auto"</code> or <code>"addon"</code>.</li>
+          </ol>
+          <p>Supports regular DynamicShop material items and configured item templates. Stored-item variants and multi-currency payouts are not supported.</p>
         </div>
       </div>
     `
