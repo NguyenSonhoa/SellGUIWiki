@@ -912,11 +912,38 @@ const sections = [
     title: "Changelog",
     icon: "history",
     desc: "Recent release notes.",
-    keywords: "changelog versions release 3.1 3.0.5 3.0.4 3.0.3 3.0.2 3.0.1 3.0.0",
+    keywords: "changelog versions release 3.1.7 3.1.6 3.1.5 3.1.4 3.1.3 3.1.2 3.1 3.0.5 3.0.4 3.0.3 3.0.2 3.0.1 3.0.0",
     html: `
       <div class="doc-card">
         <h3>Release history</h3>
         <div class="timeline">
+          <div class="release">
+            <div class="release-header"><span class="release-title">3.1.7</span><span class="release-date">2026-07-12</span></div>
+            <ul>
+              <li>Added <code>sender: console|player|op</code> for custom menu item commands.</li>
+              <li>Added the <code>SellGUI-DynamicShop</code> addon for DynamicShop sell prices, stock updates, and transaction logging.</li>
+              <li>Released <code>SellGUI-3.1.7.jar</code>, <code>SellGUI-DynamicShop-3.1.7.jar</code>, and <code>SellGUI-DynaShop-3.1.7.jar</code>.</li>
+            </ul>
+          </div>
+          <div class="release">
+            <div class="release-header"><span class="release-title">3.1.6</span><span class="release-date">2026-07-12</span></div>
+            <ul>
+              <li>Worth lore now displays a unit price such as <code>$0.45/u</code>, allowing equivalent stacks to merge correctly.</li>
+            </ul>
+          </div>
+          <div class="release">
+            <div class="release-header"><span class="release-title">3.1.5</span><span class="release-date">2026-07-12</span></div>
+            <ul>
+              <li>Stripped packet-only worth lore from incoming inventory clicks to prevent client/server item-component mismatch during stack merges.</li>
+            </ul>
+          </div>
+          <div class="release">
+            <div class="release-header"><span class="release-title">3.1.2–3.1.4</span><span class="release-date">2026-06-30 to 2026-07-10</span></div>
+            <ul>
+              <li>Fixed worth lore refresh after player item drops.</li>
+              <li>Fixed packet-injected worth lore interfering with identical item stack merging.</li>
+            </ul>
+          </div>
           <div class="release">
             <div class="release-header"><span class="release-title">3.1</span><span class="release-date">2026-06-06</span></div>
             <ul>
