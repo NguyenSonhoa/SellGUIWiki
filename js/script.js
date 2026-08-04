@@ -148,6 +148,7 @@ fishing-info:
     - "fishing"
   disabled: false
   sender: "player" # console, player, or op
+  close-menu: true # close SellGUI before command runs
   lore:
     - "&7This button only appears"
     - "&7in the fishing sell menu."
@@ -336,8 +337,8 @@ const sections = [
         <div class="doc-card">
           <h3>Required</h3>
           ${table(["Component", "Notes"], [
-            ["Java", "Java 21 recommended for modern Paper or Spigot 1.20.6+ servers."],
-            ["Server", "Paper or Spigot <code>1.20.6+</code>, optimized for <code>1.21+</code>."],
+            ["Java", "Use the Java version required by the server. Paper 26.3 requires Java 25."],
+            ["Server", "One SellGUI jar supports Paper <code>1.21.x</code> through <code>26.3</code>."],
             ["Vault", "Required economy bridge."],
             ["Economy plugin", "EssentialsX, CMI, or any Vault-compatible economy plugin."],
             ["NBTAPI", "Declared as a required dependency in <code>plugin.yml</code>."]
@@ -629,9 +630,10 @@ const sections = [
           ["<code>item-model</code>", "Optional namespaced item model, for example <code>kostka:add10_button_model</code>."],
           ["<code>hide-tool-tip</code>", "Optional boolean to hide the vanilla tooltip on supported servers."],
           ["<code>tooltip-style</code>", "Optional namespaced tooltip style, for example <code>minecraft:empty</code>."],
-          ["<code>disabled</code>", "If true, the button is replaced by the menu filler item."],
-          ["<code>sender</code>", "Command sender: <code>console</code> (default), <code>player</code>, or <code>op</code>. The <code>op</code> mode temporarily grants OP only while dispatching the command."],
-          ["<code>commands</code>", "Commands run when clicked. Supports <code>%player%</code>; a leading <code>/</code> is optional."]
+           ["<code>disabled</code>", "If true, the button is replaced by the menu filler item."],
+           ["<code>sender</code>", "Command sender: <code>console</code> (default), <code>player</code>, or <code>op</code>. The <code>op</code> mode temporarily grants OP only while dispatching the command."],
+           ["<code>close-menu</code>", "When true, closes SellGUI then runs commands one tick later. Use this for commands that open their own GUI, such as MyCommand menus."],
+           ["<code>commands</code>", "Commands run when clicked. Supports <code>%player%</code>; a leading <code>/</code> is optional."]
         ])}
       </div>
     `
@@ -912,11 +914,19 @@ const sections = [
     title: "Changelog",
     icon: "history",
     desc: "Recent release notes.",
-    keywords: "changelog versions release 3.1.7 3.1.6 3.1.5 3.1.4 3.1.3 3.1.2 3.1 3.0.5 3.0.4 3.0.3 3.0.2 3.0.1 3.0.0",
+    keywords: "changelog versions release 3.1.8 3.1.7 3.1.6 3.1.5 3.1.4 3.1.3 3.1.2 3.1 3.0.5 3.0.4 3.0.3 3.0.2 3.0.1 3.0.0",
     html: `
       <div class="doc-card">
         <h3>Release history</h3>
         <div class="timeline">
+          <div class="release">
+            <div class="release-header"><span class="release-title">3.1.8</span><span class="release-date">2026-08-05</span></div>
+            <ul>
+              <li>Added <code>close-menu: true</code> for custom menu items. SellGUI closes before player commands run, allowing commands to open their own inventory GUI.</li>
+              <li>Set a Paper <code>1.21.x</code> API baseline for one Java 17 bytecode jar targeting Paper through <code>26.3</code>.</li>
+              <li>Released <code>SellGUI-3.1.8.jar</code>, <code>SellGUI-DynamicShop-3.1.8.jar</code>, and <code>SellGUI-DynaShop-3.1.8.jar</code>.</li>
+            </ul>
+          </div>
           <div class="release">
             <div class="release-header"><span class="release-title">3.1.7</span><span class="release-date">2026-07-12</span></div>
             <ul>
